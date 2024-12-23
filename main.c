@@ -1,27 +1,39 @@
-// Programme gestion password V1
-// Cahier des charges : La frappe de l'utilisateur ne doit pas ce refleter sr l'ecran, un utilisateur doit rentrer
-// un mots de passe à la fois sans aucune contrainte mais aussi sans aucune securité de frappe, stocker le mdp
-// dans un tableau et ensuite le reaffichier à la fin
+// Programme gestion password V1.1
+// Cahier des charges : Ajout de securité au programme (Gestion des touches spéciale et du backspace)
+// +Gestion espace, suprimmer le charactère précedent
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main(void) {
-    int x, TaillePassword = 20, Flagout = 0;
+    int x = 0, TaillePassword = 10, Flagout = 0;
     char TPassword[TaillePassword+1];
-    //Mode d'emploie
-    printf("Mode d'emploi :\n\t --> Enter : Valide votre mots de passe");
-    getch();
-    system("cls");
-
     //Code pour le mots de passe
-    printf("Mots de passe (aucun reflet de la frappe): ");
-    for(x=0; Flagout != 1; x++) {
+    printf("Mots de passe (aucun reflet de la frappe, Taille Max : 10): ");
+    do {
         TPassword[x] = getch();
-        if (TPassword[x] == 13) { // Code Enter afin de sortir de programme
-            Flagout = 1;
-        }
-    }
-    printf("\n--> Votre mots de passe est : %s", TPassword);
-    getch();
+            if (TPassword[x] == 13) { // Code Enter afin de sortir de programme
+                Flagout = 1;
+            }
+            else if (TPassword[x] == 9 || TPassword[x]== 27 || TPassword[x] == 32) { // Code ASCII touche spéciale
+                TPassword[x] = 0;
+                x--;
+            }
+            else if (TPassword[x] == 8) { // Gestion de la touche retour
+                if(x > 0) {
+                    x--;
+                }
+            }
+            else {
+                if(x <= TaillePassword - 1) { // Taille maxium du tableau - 1 en comptant le 0
+                    x++;
+                }
+            }
+        }while (Flagout != 1);
+        TPassword[x] = 0;
+        printf("\n--> Votre mots de passe est : %s", TPassword); // Verification du mots de passe finale (Sans debugage)
+        printf("\n--> Taille du mdp : %d", strlen(TPassword)); // Verification de la taille finale (Sans debugage)
 
+    getch();
+    return 0;
 }
