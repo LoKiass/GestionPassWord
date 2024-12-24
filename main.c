@@ -1,19 +1,16 @@
-// Programme gestion password V5
-// Faire un outils pour le gestion MDP et tous afficher dans le main
-
+// Programme gestion password V6
+// Optimisation + Gestion erreur charactere speciale
 #include <ctype.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-int GestionPasswordAndLogin(char*, int);
+void GestionPasswordAndLogin(char*, int);
 
 int main(void) {
-    int x = 0, TaillePassword = 10;
-    char TPassword[TaillePassword+1], *Ptab;
+    int TaillePassword = 10;
+    char TPassword[TaillePassword+1];
     //Code pour le mots de passe
-    printf("Mots de passe (aucun reflet de la frappe, Taille Max : 10, Minimum 5 charactere donc 1 maj, 1 min, 1 ponctuation et 1 digit): ");
-    x = GestionPasswordAndLogin(TPassword, TaillePassword); // Notre pointeur pointe maintenant le début de l'adresse de notre tableau
-    TPassword[x] = 0; // \0 de clôture d'une chaîne de charactère
+    printf("Mots de passe (aucun reflet de la frappe): ");
+    GestionPasswordAndLogin(TPassword, TaillePassword); // Notre pointeur pointe maintenant le début de l'adresse de notre tableau
     printf("\n--> Votre mots de passe est : %s", TPassword); // Verification du mots de passe finale (Sans debugage)
     printf("\n--> Taille du mdp : %d", strlen(TPassword)); // Verification de la taille finale (Sans debugage)
 
@@ -21,8 +18,9 @@ int main(void) {
     return 0;
 }
 
-int GestionPasswordAndLogin(char *Ptab, int TaillePasswordGPAL) {
+void GestionPasswordAndLogin(char *Ptab, int TaillePasswordGPAL) {
     int Flagout = 0, MinimumPass = 5, FlagComplex = 0, y = 0, x = 0;
+    char ErrMessage[80+1];
     do {
         Ptab[x] = getch();
         if (Ptab[x] == 13) { // Code Enter afin de sortir de programme
@@ -44,6 +42,28 @@ int GestionPasswordAndLogin(char *Ptab, int TaillePasswordGPAL) {
                 if (FlagComplex == 15) { // 8+4+2+1 = 15
                     Flagout = 1;
                 }
+                else {
+                    ErrMessage[0] = 0;
+                    strcat(ErrMessage, "  --> Manquant : ");
+                    if (!(FlagComplex & 1)) {
+                        strcat(ErrMessage, "Min - ");
+                    }
+                    if (!(FlagComplex & 2)) {
+                        strcat(ErrMessage, "Maj - ");
+                    }
+                    if (!(FlagComplex & 4)) {
+                        strcat(ErrMessage, "Punct - ");
+                    }
+                    if (!(FlagComplex & 8)) {
+                        strcat(ErrMessage, "Digit - ");
+                    }
+                    printf("%s", ErrMessage);
+                    getch();
+                    for(y = 0; y < strlen(ErrMessage); y++) {
+                        printf("\b \b");
+                    }
+
+                }
             }
         }
         else if (Ptab[x] == 9 || Ptab[x]== 27 || Ptab[x] == 32) { // Code ASCII touche spéciale
@@ -62,5 +82,5 @@ int GestionPasswordAndLogin(char *Ptab, int TaillePasswordGPAL) {
             }
         }
     }while (Flagout != 1);
-    return x;
+    Ptab[x] = 0;
 }
